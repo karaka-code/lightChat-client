@@ -19,8 +19,6 @@ export const Chat = () => {
     const [messageData, setMessageData] = useState([])
     const [roomUsers, setRoomUsers] = useState([])
     const [currentRoom, setCurrentRoom] = useState('')
-    const [requestedMessages, setRequestedMessages] = useState([])
-    const [finalMessages, setFinalMessages] = useState([])
     const {request} = useHttp()
 
     const selectedRoom = useSelector(state => state.room.selectedRoom)
@@ -58,7 +56,7 @@ export const Chat = () => {
     const getMessages = useCallback(async () => {
         try {
             const data = await request(`/api/message/${selectedRoom._id}`, 'GET', null)
-            setRequestedMessages(data)
+            setMessageData(data)
         } catch (e) {
         }
     }, [request, selectedRoom])
@@ -67,10 +65,6 @@ export const Chat = () => {
         getMessages()
     }, [getMessages])
 
-    useEffect(() => {
-        let result = messageData.concat(requestedMessages)
-        setFinalMessages(result)
-    }, [messageData, requestedMessages])
 
 
     const sendMessage = (e) => {
@@ -105,9 +99,9 @@ export const Chat = () => {
                     ? <div className="outerContainer">
                         <div className="container_css">
                             <InfoBar/>
-                            {finalMessages &&
+                            {messageData &&
                             <Messages
-                                messageData={finalMessages}
+                                messageData={messageData}
                             />}
                             <form className="form">
                                 <input
