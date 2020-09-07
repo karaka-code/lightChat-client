@@ -1,0 +1,11 @@
+.roomUsers {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.listItem {
+    border-top: 1px solid black;
+}
