@@ -1,10 +1,9 @@
 import React from "react";
-import {Chat} from "../components/Chat";
 
 const HomePage = () => {
     return (
         <>
-            <Chat />
+            <h2>Welcome to LightChat beta</h2>
         </>
     )
 }

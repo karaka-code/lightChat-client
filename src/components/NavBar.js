@@ -1,4 +1,4 @@
-import React, {useEffect, useCallback, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useDispatch} from "react-redux";
 import {logOutUser} from "../store/user/actions";
 import {useMessage} from "../hooks/message.hook";
@@ -44,26 +44,29 @@ const NavBar = () => {
             <div className="nav-wrapper">
                 <span className="left brand-logo"><Link to="/">LightChat</Link></span>
                 <ul className="right" style={{display: "flex", alignItems: "center"}}>
+                    <button
+                        style={{marginRight: 10, marginLeft: 10}}
+                        className="btn"
+                    >
+                        <Link to="/chat">Chat</Link>
+                    </button>
                     <Dropdown style={{marginRight: 20}}>
                         <Dropdown.Toggle variant="success" id="dropdown-basic">
                             Rooms
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                            { rooms ? rooms.map((room,index) => {
-                                return <Dropdown.Item onClick={() => handleSelectRoom(room)} key={index}>{room.name}</Dropdown.Item>
+                            {rooms ? rooms.map((room, index) => {
+                                return <Dropdown.Item onClick={() => handleSelectRoom(room)}
+                                                      key={index}>{room.name}</Dropdown.Item>
                             }) : "You haven`t created any rooms"}
                         </Dropdown.Menu>
                     </Dropdown>
-                    <Dropdown>
-                        <Dropdown.Toggle variant="success" id="dropdown-basic">
-                            Friends List
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                            <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                            <Dropdown.Item>Something else</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
+                    <button
+                        style={{marginRight: 10, marginLeft: 10}}
+                        className="btn"
+                    >
+                        <Link to="/search">Search friends</Link>
+                    </button>
                     <button
                         style={{marginRight: 10, marginLeft: 10}}
                         onClick={handleLogout}

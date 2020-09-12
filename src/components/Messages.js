@@ -6,13 +6,26 @@ import Message from './Message';
 
 import './Messages.css';
 
-const Messages = ({messageData}) => {
-    console.log(messageData)
+const Messages = ({messageData, botMessage}) => {
     return (
         <ScrollToBottom className="messages">
-            {messageData.map((message, i) => <div key={i}><Message time={message.time} message={message.text}
-                                                                user={message.user}/>
-            </div>)}
+            {botMessage && botMessage.map((message, i) =>
+                <div key={i}>
+                    <Message time={message.time}
+                             message={message.text}
+                             user={message.user}
+                    />
+                </div>
+            )}
+            {messageData.map((message, i) =>
+                <div key={i}>
+                    <Message
+                        time={message.time}
+                        message={message.text}
+                        user={message.user}
+                    />
+                </div>
+            )}
         </ScrollToBottom>
     )
 };

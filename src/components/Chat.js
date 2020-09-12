@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from "react";
 import io from "socket.io-client"
-import {useSelector} from "react-redux";
+import {useSelector, useDispatch} from "react-redux";
 import {Modal} from "./Modal";
 import {InfoBar} from './InfoBar'
 import './Chat.css'
@@ -15,10 +15,10 @@ const socket = io();
 
 export const Chat = () => {
     const [message, setMessage] = useState('')
-    const [messages, setMessages] = useState([])
-    const [messageData, setMessageData] = useState([])
+    const [sysMessages, setSysMessages] = useState([])
     const [roomUsers, setRoomUsers] = useState([])
     const [currentRoom, setCurrentRoom] = useState('')
+    const [messageTracking, setMessageTracking]= useState([])
     const {request} = useHttp()
 
     const selectedRoom = useSelector(state => state.room.selectedRoom)
@@ -28,9 +28,11 @@ export const Chat = () => {
         if (selectedRoom && user) {
             let username = user.name
             let room = selectedRoom.name
-            socket.emit('joinRoom', {username, room})
+            let roomId = selectedRoom._id
+            socket.emit('joinRoom', {username, room, roomId})
         }
     }, [selectedRoom, user])
+
 
     useEffect(() => {
         getName()
@@ -40,23 +42,22 @@ export const Chat = () => {
         })
     }, [getName])
 
-    const saveData = useCallback((msg) => {
-        setMessageData([...messageData, msg])
-    }, [messageData])
+    const saveData = useCallback( (msg) => {
+        setSysMessages([...sysMessages, msg])
+    }, [sysMessages])
 
     useEffect(() => {
         socket.on('message', (message) => {
             saveData(message)
-            setMessages([...messages, message.text])
             setMessage('')
         })
-    }, [messages, saveData])
+    }, [saveData])
 
 
     const getMessages = useCallback(async () => {
         try {
             const data = await request(`/api/message/${selectedRoom._id}`, 'GET', null)
-            setMessageData(data)
+            setMessageTracking(data)
         } catch (e) {
         }
     }, [request, selectedRoom])
@@ -70,20 +71,22 @@ export const Chat = () => {
     const sendMessage = (e) => {
         e.preventDefault()
         socket.emit('chatMessage', message)
-        fetchMessage(message)
+        apiSendMessage(message)
     }
 
-    const fetchMessage = async () => {
+    const apiSendMessage = async (msg) => {
         try {
             await request('/api/message/', 'POST',
-                {text: message, room: selectedRoom._id, user: user.name, time: moment().format('h:mm a')})
+                {text: msg, room: selectedRoom._id, user: user.name, time: moment().format('h:mm a')})
         } catch (e) {
         }
     }
 
+
     const handleChange = (e) => {
         setMessage(e.target.value)
     }
+
 
     return (
         <>
@@ -98,10 +101,11 @@ export const Chat = () => {
                 selectedRoom
                     ? <div className="outerContainer">
                         <div className="container_css">
-                            <InfoBar/>
-                            {messageData &&
+                            <InfoBar />
+                            {sysMessages &&
                             <Messages
-                                messageData={messageData}
+                                botMessage={sysMessages}
+                                messageData={messageTracking}
                             />}
                             <form className="form">
                                 <input

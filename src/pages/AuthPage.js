@@ -4,7 +4,7 @@ import {useMessage} from "../hooks/message.hook";
 import {useDispatch} from "react-redux";
 import {logInUser} from "../store/user/actions";
 
-export const AuthPage = () => {
+const AuthPage = () => {
     const dispatch = useDispatch()
     const message = useMessage()
     const {error, request, clearError} = useHttp()
@@ -106,3 +106,5 @@ export const AuthPage = () => {
         </form>
     )
 }
+
+export default AuthPage
