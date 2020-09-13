@@ -15,26 +15,18 @@ const SearchPage = () => {
     const handleSearch = useCallback(async (e) => {
         e.preventDefault()
         try {
-            const data = await request(`/api/friends`, 'GET', null)
+            const data = await request(`/api/friends/?q=${name}`, 'GET', null)
             setFriends(data)
         } catch (e) {
         }
-    }, [request])
+    }, [request, name])
 
     const changeForm = e => {
         setName(e.target.value)
     }
 
     const handleFriend = (item) => {
-        addedFriends.length !== 0
-            ? addedFriends.map(friend => {
-                if (friend._id === item._id) {
-                    return message("User not")
-                } else if(friend._id !== item._id) {
-                    return dispatch(addFriend(item))
-                }
-            })
-            : dispatch(addFriend(item))
+        dispatch(addFriend(item))
     }
 
     return (
@@ -59,21 +51,19 @@ const SearchPage = () => {
                 {friends.length !== 0 && <ul className="collection with-header">
                     <li className="collection-header"><h4>Found users:</h4></li>
                     {friends.map(item => {
-                        if (item.name === name) {
-                            return <li
-                                className="collection-item"
-                                key={item._id}>
-                                {item.name}
-                                <button style={{float: "right"}}
-                                        onClick={() => handleFriend(item)}
-                                        className="btn waves-effect waves-light"
-                                        type="submit"
-                                        name="action"
-                                >
-                                    Add
-                                </button>
-                            </li>
-                        }
+                        return <li
+                            className="collection-item"
+                            key={item._id}>
+                            {item.name}
+                            <button style={{float: "right"}}
+                                    onClick={() => handleFriend(item)}
+                                    className="btn waves-effect waves-light"
+                                    type="submit"
+                                    name="action"
+                            >
+                                Add
+                            </button>
+                        </li>
                     })}
                 </ul>}
 
