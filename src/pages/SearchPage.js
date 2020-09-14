@@ -2,7 +2,6 @@ import React, {useCallback, useState} from "react";
 import {useHttp} from "../hooks/http.hook";
 import {addFriend} from "../store/friends/actions";
 import {useDispatch, useSelector} from "react-redux";
-import {useMessage} from "../hooks/message.hook";
 
 const SearchPage = () => {
     const {request} = useHttp()
@@ -10,16 +9,25 @@ const SearchPage = () => {
     const [name, setName] = useState('')
     const dispatch = useDispatch()
     const addedFriends = useSelector(state => state.friends.friends)
-    const message = useMessage()
+    const [isFriend, setIsFriend] = useState(false)
+
+    const checkUser = useCallback(() => {
+        addedFriends.map(friend => {
+            if (friend.name === name) {
+                setIsFriend(true)
+            }
+        })
+    }, [addedFriends, name])
 
     const handleSearch = useCallback(async (e) => {
         e.preventDefault()
         try {
             const data = await request(`/api/friends/?q=${name}`, 'GET', null)
             setFriends(data)
+            checkUser()
         } catch (e) {
         }
-    }, [request, name])
+    }, [request, name, checkUser])
 
     const changeForm = e => {
         setName(e.target.value)
@@ -27,7 +35,9 @@ const SearchPage = () => {
 
     const handleFriend = (item) => {
         dispatch(addFriend(item))
+        friends.length = 0
     }
+
 
     return (
         <>
@@ -55,11 +65,13 @@ const SearchPage = () => {
                             className="collection-item"
                             key={item._id}>
                             {item.name}
+                            {isFriend && <p>Already a friend</p>}
                             <button style={{float: "right"}}
                                     onClick={() => handleFriend(item)}
                                     className="btn waves-effect waves-light"
                                     type="submit"
                                     name="action"
+                                    disabled={isFriend}
                             >
                                 Add
                             </button>

@@ -1,12 +1,11 @@
 import React, {useCallback, useEffect, useState} from "react";
 import io from "socket.io-client"
-import {useSelector, useDispatch} from "react-redux";
-import {Modal} from "./Modal";
+import {useSelector} from "react-redux";
+import Modal from "./Modal";
 import {InfoBar} from './InfoBar'
 import './Chat.css'
 import './Input.css'
 import Messages from "./Messages";
-import {RoomInfo} from "./RoomInfo";
 import {useHttp} from "../hooks/http.hook";
 
 const moment = require('moment')
@@ -17,8 +16,7 @@ export const Chat = () => {
     const [message, setMessage] = useState('')
     const [sysMessages, setSysMessages] = useState([])
     const [roomUsers, setRoomUsers] = useState([])
-    const [currentRoom, setCurrentRoom] = useState('')
-    const [messageTracking, setMessageTracking]= useState([])
+    const [messageTracking, setMessageTracking] = useState([])
     const {request} = useHttp()
 
     const selectedRoom = useSelector(state => state.room.selectedRoom)
@@ -36,13 +34,12 @@ export const Chat = () => {
 
     useEffect(() => {
         getName()
-        socket.on('roomUsers', ({room, users}) => {
+        socket.on('roomUsers', ({users}) => {
             setRoomUsers(users)
-            setCurrentRoom(room)
         })
     }, [getName])
 
-    const saveData = useCallback( (msg) => {
+    const saveData = useCallback((msg) => {
         setSysMessages([...sysMessages, msg])
     }, [sysMessages])
 
@@ -65,7 +62,6 @@ export const Chat = () => {
     useEffect(() => {
         getMessages()
     }, [getMessages])
-
 
 
     const sendMessage = (e) => {
@@ -101,7 +97,7 @@ export const Chat = () => {
                 selectedRoom
                     ? <div className="outerContainer">
                         <div className="container_css">
-                            <InfoBar />
+                            <InfoBar roomUsers={roomUsers}/>
                             {sysMessages &&
                             <Messages
                                 botMessage={sysMessages}
@@ -118,9 +114,6 @@ export const Chat = () => {
                                 />
                                 <button className="sendButton" type="submit" onClick={e => sendMessage(e)}>Send</button>
                             </form>
-                        </div>
-                        <div className="info_container">
-                            <RoomInfo roomUsers={roomUsers} currentRoom={currentRoom}/>
                         </div>
                     </div>
                     : null

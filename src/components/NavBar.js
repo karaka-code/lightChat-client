@@ -3,16 +3,26 @@ import {useDispatch} from "react-redux";
 import {logOutUser} from "../store/user/actions";
 import {useMessage} from "../hooks/message.hook";
 import {Link} from "react-router-dom";
-import {Dropdown} from "react-bootstrap";
 import "./NavBarStyles.css"
 import {useHttp} from "../hooks/http.hook";
 import {selectRoom} from "../store/rooms/actions";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 
 const NavBar = () => {
     const dispatch = useDispatch()
     const message = useMessage()
     const {request} = useHttp()
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const [rooms, setRooms] = useState([])
 
@@ -43,24 +53,29 @@ const NavBar = () => {
         <nav>
             <div className="nav-wrapper">
                 <span className="left brand-logo"><Link to="/">LightChat</Link></span>
-                <ul className="right" style={{display: "flex", alignItems: "center"}}>
+                <ul className="right">
                     <button
-                        style={{marginRight: 10, marginLeft: 10}}
                         className="btn"
                     >
                         <Link to="/chat">Chat</Link>
                     </button>
-                    <Dropdown style={{marginRight: 20}}>
-                        <Dropdown.Toggle variant="success" id="dropdown-basic">
-                            Rooms
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            {rooms ? rooms.map((room, index) => {
-                                return <Dropdown.Item onClick={() => handleSelectRoom(room)}
-                                                      key={index}>{room.name}</Dropdown.Item>
-                            }) : "You haven`t created any rooms"}
-                        </Dropdown.Menu>
-                    </Dropdown>
+                    <button className="waves-effect waves-light btn" aria-controls="simple-menu"
+                            aria-haspopup="true" onClick={handleClick}>
+                        Rooms
+                    </button>
+                    <Menu
+                        id="simple-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                    >
+                        {rooms ? rooms.map((room, index) => {
+                            return <MenuItem onClick={handleClose} key={index}><span
+                                onClick={() => handleSelectRoom(room)}
+                            >{room.name}</span></MenuItem>
+                        }) : "You haven`t created any rooms"}
+                    </Menu>
                     <button
                         style={{marginRight: 10, marginLeft: 10}}
                         className="btn"
@@ -86,5 +101,6 @@ const NavBar = () => {
         </nav>
     )
 }
+
 
 export default NavBar
